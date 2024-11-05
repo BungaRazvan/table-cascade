@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("ER Diagram Viewer")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(3100, 200, 800, 600)
         self.label = QLabel("Hello, PyQt5!", self)
 
         self.view = QGraphicsView(self)

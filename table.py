@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import (
     QGraphicsTextItem,
     QGraphicsLineItem,
 )
-from PyQt5.QtGui import QPen, QBrush
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QPen, QBrush, QDrag
+from PyQt5.QtCore import Qt, QPointF, QMimeData
 
 
 class ERTableNode(QGraphicsRectItem):
@@ -18,6 +18,10 @@ class ERTableNode(QGraphicsRectItem):
         self.title = QGraphicsTextItem(table_name, self)
         self.title.setDefaultTextColor(Qt.black)
         self.title.setPos(5, 5)
+        self.setFlags(
+            QGraphicsRectItem.ItemIsMovable | QGraphicsRectItem.ItemIsSelectable
+        )
+        self.connected_lines = []
 
         for i, field in enumerate(fields):
             field_text = QGraphicsTextItem(field, self)
@@ -28,6 +32,19 @@ class ERTableNode(QGraphicsRectItem):
         return QPointF(
             self.x() + self.rect().width() / 2, self.y() + self.rect().height() / 2
         )
+
+    def add_line(self, line):
+        """Add a line to update when this item moves."""
+        self.connected_lines.append(line)
+
+    def itemChange(self, change, value):
+        """Override itemChange to update lines when the table is moved."""
+
+        if change == QGraphicsRectItem.ItemPositionChange:
+            for line in self.connected_lines:
+                line.update_position()
+
+        return super().itemChange(change, value)
 
 
 class ERDiagram(QGraphicsScene):
